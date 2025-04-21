@@ -75,10 +75,10 @@ http://kev-cloudfront-bucket-2025.s3-website-us-east-1.amazonaws.com
 
 ---
 
-## 📌 Notes
-- No ACLs are used (best practice)
-- Public access is allowed via bucket policy (optional)
-- CloudFront and HTTPS support will be added in the next phase
+## 📌 Deployment Notes
+- GitHub repo: [terraform-smart-static-site](https://github.com/fkv747/terraform-smart-static-site)
+- `.terraform/` folder and binary files are excluded from version control using `.gitignore`
+- Git push failed initially due to provider binaries >100MB — resolved by cleaning Git history
 
 ---
 

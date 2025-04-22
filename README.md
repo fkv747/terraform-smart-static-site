@@ -1,14 +1,16 @@
 
 # 📦 Smart Static Website on AWS (Terraform)
 
-This project builds a secure, scalable, and fast static website on AWS using Terraform. It follows modern IaC practices and is part of a 5-project AWS portfolio.
+This project builds a secure, scalable, and fast static website on AWS using Terraform. It includes CloudFront, a custom domain via Route 53, HTTPS via ACM, and is structured for clarity and reusability.
 
 ## ✅ Features
 - Static website hosting via **S3**
-- Global delivery with **CloudFront**
-- Public access via Origin Access Identity (OAI) — **no ACLs**
-- Modular Terraform setup with outputs
-- Designed for fast deploy + easy teardown
+- Global delivery using **CloudFront**
+- Locked-down access with **Origin Access Identity (OAI)**
+- Custom domain with **Route 53**
+- Automated **HTTPS with AWS Certificate Manager (ACM)**
+- Fully deployed via **modular Terraform**
+- Designed for scalability, security, and IaC best practices
 
 ---
 
@@ -17,7 +19,8 @@ This project builds a secure, scalable, and fast static website on AWS using Ter
 ### 🧱 Prerequisites
 - Terraform >= 1.3.0
 - AWS CLI configured
-- AWS provider version >= 4.46.0
+- AWS account with access to Route 53 and ACM
+- A registered domain (e.g. `fkvventures.com`)
 
 ### 📁 Project Structure
 ```
@@ -27,7 +30,7 @@ smart-static-site/
 ├── outputs.tf
 ├── backend.tf                 # Optional: for remote state
 ├── website/
-│   └── index.html             # Your actual website content
+│   └── index.html             # macOS-style UI content
 └── modules/
     └── s3-cloudfront/
         ├── main.tf            # S3, CloudFront, OAI, object upload
@@ -39,20 +42,20 @@ smart-static-site/
 
 ### 🛠 Step-by-Step Deployment
 
-#### 1. Initialize the Terraform environment
+#### 1. Initialize Terraform
 ```bash
 terraform init
 ```
 
-#### 2. Apply the infrastructure
+#### 2. Apply Infrastructure
 ```bash
 terraform apply
 ```
-- Choose a unique S3 bucket name (e.g., `kev-cloudfront-bucket-2025`)
+- Choose a globally unique S3 bucket name (e.g., `kev-cloudfront-bucket-2025`)
 - Confirm apply when prompted
 
-#### 3. Upload the `index.html` file to S3 automatically
-Terraform uploads the file via this block inside the module:
+#### 3. Upload the HTML File Automatically
+Handled via Terraform:
 ```hcl
 resource "aws_s3_object" "index_html" {
   bucket       = aws_s3_bucket.website_bucket.id
@@ -62,60 +65,64 @@ resource "aws_s3_object" "index_html" {
 }
 ```
 
-#### 4. Create CloudFront with OAI
-- CloudFront fetches from S3 securely
-- Public access is only via CloudFront
-- S3 policy is restricted to OAI IAM identity
+#### 4. Configure ACM & DNS Validation
+Terraform provisions:
+- Certificate via `aws_acm_certificate`
+- DNS CNAME records via `aws_route53_record`
+- Certificate validation via `aws_acm_certificate_validation`
 
-#### 5. Output the CloudFront URL
-```bash
-terraform output cloudfront_url
+#### 5. Attach ACM to CloudFront for HTTPS
+After cert status is "Issued", CloudFront is updated to use:
+```hcl
+viewer_certificate {
+  acm_certificate_arn = aws_acm_certificate.cert.arn
+  ssl_support_method  = "sni-only"
+}
 ```
-Result:
+
+#### 6. Map Your Domain to CloudFront
+Alias record added via Route 53:
+```hcl
+resource "aws_route53_record" "alias" {
+  name    = "fkvventures.com"
+  type    = "A"
+  zone_id = aws_route53_zone.main.zone_id
+
+  alias {
+    name                   = aws_cloudfront_distribution.site_cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.site_cdn.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
 ```
-cloudfront_url = https://d123456abcdef.cloudfront.net
-```
-✅ Paste that in the browser to view your live static site!
 
 ---
 
-## 🧠 AWS Resources Used
-| Resource                         | Purpose                          |
-|----------------------------------|----------------------------------|
-| `aws_s3_bucket`                 | Host the static content          |
-| `aws_s3_bucket_website_configuration` | Configure index/error docs       |
-| `aws_s3_bucket_public_access_block` | Allow public access for CloudFront only |
-| `aws_cloudfront_origin_access_identity` | Restrict S3 access to CloudFront only |
-| `aws_cloudfront_distribution`  | Global CDN + security            |
-| `aws_s3_bucket_policy`         | OAI read-only access             |
-| `aws_s3_object`                | Upload the HTML file             |
+## 🔐 Optional Enhancements
+- [ ] Integrate AWS WAF to filter traffic and block bots/IPs
+- [ ] Add GitHub Actions for CI/CD
+- [ ] Deploy preview environments per pull request
 
 ---
 
-## 📌 Deployment Notes
-- GitHub repo: [terraform-smart-static-site](https://github.com/fkv747/terraform-smart-static-site)
-- `.terraform/` folder and binary files are excluded using `.gitignore`
-- Git push failed initially due to >100MB provider files — fixed via history cleanup
-- Final output is a secure CloudFront URL serving a smart static site
+## 📸 Screenshots (include these in your GitHub repo or blog)
+- [x] Architecture diagram
+- [x] Folder structure
+- [x] Terraform `apply` success
+- [x] CloudFront distribution
+- [x] ACM validation
+- [x] HTTPS in browser with custom domain
 
 ---
 
-## 📸 Screenshots
-- [x] Architecture diagram (S3 + CloudFront + OAI)
-- [x] Terraform folder structure
-- [x] CloudFront distribution screen
-- [x] Live site via CloudFront URL
+## 🧠 Lessons Learned
+- Don’t forget to upload `index.html` *after* locking down S3 with OAI
+- ACM validation can take longer than expected — always check DNS
+- Automating HTTPS and DNS with Terraform is worth the effort
 
 ---
 
-## 🧩 Upcoming Additions
-- [ ] HTTPS via ACM
-- [ ] WAF integration
-- [ ] Route53 (custom domain)
+## 📘 Project Repo
+[terraform-smart-static-site](https://github.com/fkv747/terraform-smart-static-site)
 
----
-
-## 💼 Author
-Built by **Kev** as part of a real-world AWS portfolio project.
-
-Stay tuned for the full blog post and LinkedIn article!
+Built with IaC-first principles and designed to scale with future integrations like WAF, CI/CD, and preview workflows.

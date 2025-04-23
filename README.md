@@ -1,5 +1,5 @@
 
-# 📦 Smart Static Website on AWS (Terraform)
+# Smart Static Website on AWS (Terraform)
 
 ![Terraform](https://img.shields.io/badge/Terraform-1.3%2B-blue)
 ![AWS](https://img.shields.io/badge/AWS-CloudFront%20%7C%20S3%20%7C%20ACM%20%7C%20WAF-orange)
@@ -10,17 +10,17 @@ This project uses S3 for storage, CloudFront for distribution, Route 53 for DNS,
 
 ---
 
-## 🔍 Demo
+## Demo
 
 📺 **Watch the YouTube demo**  
 [Watch the YouTube demo](https://www.youtube.com/watch?v=YOUR_DEMO_LINK)  
 _This app was deployed and verified using a custom domain and HTTPS, then turned off to reduce AWS costs. All code and architecture are fully documented below._
 
-📸 [INSERT: Screenshot of browser with live HTTPS version]
+[INSERT: Screenshot of browser with live HTTPS version]
 
 ---
 
-## 🧱 Architecture
+## Architecture
 
 This diagram summarizes the full AWS-powered architecture, deployed entirely through Terraform:
 
@@ -39,15 +39,15 @@ This diagram summarizes the full AWS-powered architecture, deployed entirely thr
 
 ---
 
-## 🚀 How to Deploy This Project
+## How to Deploy This Project
 
-### 🧱 Prerequisites
+### Prerequisites
 - Terraform >= 1.3.0
 - AWS CLI configured
 - AWS account with access to Route 53, ACM, and WAF
 - A registered domain (e.g. `fkvventures.com`)
 
-### 📁 Project Structure
+### Project Structure
 ```
 smart-static-site/
 ├── main.tf
@@ -71,7 +71,7 @@ smart-static-site/
 
 ---
 
-## 🛠 Deployment Steps
+## Deployment Steps
 
 1. **Initialize Terraform**
 ```bash
@@ -165,7 +165,7 @@ resource "aws_route53_record" "alias" {
 
 ---
 
-## 💡 What I Learned
+## What I Learned
 
 This project connected every piece of cloud infrastructure I’ve studied — and forced me to think like an engineer, not just a builder. I went from hosting a static site to securing it behind CloudFront with a locked-down S3 bucket, then layering on a custom domain, HTTPS, and WAF — all using Terraform.
 
@@ -179,7 +179,7 @@ Most of all, I learned to trust Terraform to build not just infrastructure, but 
 
 ---
 
-## 📘 Project Repo
+## Project Repo
 [terraform-smart-static-site](https://github.com/fkv747/terraform-smart-static-site)
 
 All infrastructure code and screenshots are open source and documented.

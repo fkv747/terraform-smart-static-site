@@ -4,7 +4,29 @@
 ![Terraform](https://img.shields.io/badge/Terraform-1.3%2B-blue)
 ![AWS](https://img.shields.io/badge/AWS-CloudFront%20%7C%20S3%20%7C%20ACM%20%7C%20WAF-orange)
 
-This project builds a secure, scalable, and fast static website on AWS using Terraform. It includes CloudFront, a custom domain via Route 53, HTTPS via ACM, and full integration with AWS WAF for traffic filtering and protection — all structured for clarity and reusability.
+A secure, scalable, and global static site hosted on AWS — powered entirely by Terraform.
+
+This project uses S3 for storage, CloudFront for distribution, Route 53 for DNS, ACM for HTTPS, and WAF for edge protection. Everything is deployed through Infrastructure as Code.
+
+---
+
+## 🔍 Demo
+
+📺 **Watch the YouTube demo**  
+[Watch the YouTube demo](https://www.youtube.com/watch?v=YOUR_DEMO_LINK)  
+_This app is currently live at_ `https://fkvventures.com` _and secured with HTTPS._
+
+📸 [INSERT: Screenshot of browser with live HTTPS version]
+
+---
+
+## 🧱 Architecture
+
+This diagram summarizes the full AWS-powered architecture, deployed entirely through Terraform:
+
+📸 ![Smart Static Website Architecture](./screenshots/smart-static-website.png)
+
+---
 
 ## ✅ Features
 - Static website hosting via **S3**

@@ -24,7 +24,7 @@ _This app is currently live at_ `https://fkvventures.com` _and secured with HTTP
 
 This diagram summarizes the full AWS-powered architecture, deployed entirely through Terraform:
 
-📸 ![Smart Static Website Architecture](./screenshots/smart-static-website.png)
+![Smart Static Website Architecture](./screenshots/smart-static-website.png)
 
 ---
 
@@ -162,15 +162,6 @@ resource "aws_route53_record" "alias" {
 }
 ```
 
----
-
-## 📸 Screenshots
-All screenshots are stored in `/screenshots`:
-- `architecture.png`
-- `folder-structure.png`
-- `cloudfront-settings.png`
-- `index-preview.png`
-- `acm-validation.png`
 
 ---
 

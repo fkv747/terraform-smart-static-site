@@ -1,10 +1,5 @@
-# The module is like a mini self-contained unit we can reuse or test in isolation.
-# So we finish the module setup first, then wire it into the root later.
-
 resource "aws_s3_bucket" "website_bucket" {
   bucket = var.bucket_name
-
-
 
   tags = {
     Name = "Smart Static Site"
@@ -15,15 +10,12 @@ resource "aws_s3_bucket_website_configuration" "this" {
   bucket = aws_s3_bucket.website_bucket.id
 
   index_document {
-    suffix = "index.html" # The default page when someone visits the root (e.g. /)
+    suffix = "index.html"
   }
 
   error_document {
-    key = "index.html" # The page shown for any 404 or broken links
+    key = "index.html"
   }
-# If a user visits https://your-bucket.s3-website-region.amazonaws.com/, S3 will automatically serve index.html.
-# If they go to a broken path like /about.html and it doesn’t exist, S3 will also show index.html (or any other error file you define).
-
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
@@ -34,9 +26,72 @@ resource "aws_s3_bucket_public_access_block" "this" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
-# 🧠 When Should You Combine Services in One Module?
-# ✅ Combine Services When…	                                            ❌ Separate Services When…
-# They're tightly related (e.g. S3 + CloudFront)	                    Services are used in multiple projects
-# You want to reuse the whole combo	                                    You want reusability for a single piece (e.g. WAF policy)
-# They deploy together (need same lifecycle)	                        You might mix/match parts independently later
-# The logic is tightly coupled (e.g. CloudFront needs S3 bucket ARN)	You're building more complex, modular architectures
+
+resource "aws_cloudfront_origin_access_identity" "oai" {
+  comment = "OAI for static site bucket"
+}
+
+resource "aws_s3_bucket_policy" "public_access" {
+  bucket = aws_s3_bucket.website_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect    = "Allow",
+      Principal = {
+        AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+      },
+      Action    = "s3:GetObject",
+      Resource  = "${aws_s3_bucket.website_bucket.arn}/*"
+    }]
+  })
+}
+
+resource "aws_cloudfront_distribution" "site_cdn" {
+  enabled             = true
+  default_root_object = "index.html"
+
+  origin {
+    domain_name = aws_s3_bucket.website_bucket.bucket_regional_domain_name
+    origin_id   = "s3Origin"
+
+    s3_origin_config {
+      origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.oai.id}"
+    }
+  }
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "s3Origin"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Name = "Smart Static Site CDN"
+  }
+}
+resource "aws_s3_object" "index_html" {
+  bucket       = aws_s3_bucket.website_bucket.id
+  key          = "index.html"
+  source       = "${path.module}/../../website/index.html"
+  content_type = "text/html"
+}

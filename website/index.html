@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Static Site by Kev</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .window {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+      padding: 40px;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #6e6e73;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #007aff;
+    }
+
+    .dot-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .red { background: #ff605c; }
+    .yellow { background: #ffbd44; }
+    .green { background: #00ca4e; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="dot-bar">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+    </div>
+    <h1>Smart Static Site by Kev</h1>
+    <p>This static site is securely hosted on AWS using S3, CloudFront, and Terraform.</p>
+    <div class="status">🚀 Deployed with Infrastructure as Code</div>
+  </div>
+</body>
+</html>

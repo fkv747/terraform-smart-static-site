@@ -98,6 +98,22 @@ resource "aws_route53_record" "alias" {
 
 ---
 
+## 🔐 Optional Enhancements
+- [ ] Integrate AWS WAF to filter traffic and block bots/IPs
+- [ ] Add GitHub Actions for CI/CD
+- [ ] Deploy preview environments per pull request
+
+---
+
+## 📸 Screenshots (include these in your GitHub repo or blog)
+- [x] Architecture diagram
+- [x] Folder structure
+- [x] Terraform `apply` success
+- [x] CloudFront distribution
+- [x] ACM validation
+- [x] HTTPS in browser with custom domain
+
+---
 
 ## 🧠 Lessons Learned
 - Don’t forget to upload `index.html` *after* locking down S3 with OAI

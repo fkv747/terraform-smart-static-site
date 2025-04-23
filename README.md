@@ -14,7 +14,7 @@ This project uses S3 for storage, CloudFront for distribution, Route 53 for DNS,
 
 📺 **Watch the YouTube demo**  
 [Watch the YouTube demo](https://www.youtube.com/watch?v=YOUR_DEMO_LINK)  
-_This app is currently live at_ `https://fkvventures.com` _and secured with HTTPS._
+_This app was deployed and verified using a custom domain and HTTPS, then turned off to reduce AWS costs. All code and architecture are fully documented below._
 
 📸 [INSERT: Screenshot of browser with live HTTPS version]
 

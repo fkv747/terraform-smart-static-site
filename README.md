@@ -1,12 +1,10 @@
 
 # 📦 Smart Static Website on AWS (Terraform)
 
-![Terraform](https://img.shields.io/badge/terraform-v1.3%2B-blue?style=flat-square&logo=terraform)
-![AWS](https://img.shields.io/badge/AWS-deployed-orange?style=flat-square&logo=amazonaws)
-![Status](https://img.shields.io/badge/status-production--ready-brightgreen?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
+![Terraform](https://img.shields.io/badge/Terraform-1.3%2B-blue)
+![AWS](https://img.shields.io/badge/AWS-CloudFront%20%7C%20S3%20%7C%20ACM%20%7C%20WAF-orange)
 
-This project builds a secure, scalable, and fast static website on AWS using Terraform. It includes CloudFront, a custom domain via Route 53, HTTPS via ACM, and is structured for clarity and reusability.
+This project builds a secure, scalable, and fast static website on AWS using Terraform. It includes CloudFront, a custom domain via Route 53, HTTPS via ACM, and full integration with AWS WAF for traffic filtering and protection — all structured for clarity and reusability.
 
 ## ✅ Features
 - Static website hosting via **S3**
@@ -14,8 +12,8 @@ This project builds a secure, scalable, and fast static website on AWS using Ter
 - Locked-down access with **Origin Access Identity (OAI)**
 - Custom domain with **Route 53**
 - Automated **HTTPS with AWS Certificate Manager (ACM)**
+- Web Application Firewall (WAF) integration for added security
 - Fully deployed via **modular Terraform**
-- Designed for production-grade deployment and learning showcase
 
 ---
 
@@ -24,7 +22,7 @@ This project builds a secure, scalable, and fast static website on AWS using Ter
 ### 🧱 Prerequisites
 - Terraform >= 1.3.0
 - AWS CLI configured
-- AWS account with access to Route 53 and ACM
+- AWS account with access to Route 53, ACM, and WAF
 - A registered domain (e.g. `fkvventures.com`)
 
 ### 📁 Project Structure
@@ -80,7 +78,46 @@ resource "aws_s3_object" "index_html" {
 - Terraform provisions DNS records in Route 53
 - ACM polls until the cert is issued
 
-5. **Attach HTTPS Certificate to CloudFront**
+5. **Create and Attach WAF to CloudFront**
+```hcl
+resource "aws_wafv2_web_acl" "main" {
+  name        = "static-site-acl"
+  scope       = "CLOUDFRONT"
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "block-common-bots"
+    priority = 1
+    action {
+      block {}
+    }
+    statement {
+      managed_rule_group_statement {
+        name        = "CommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "block-common-bots"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "static-site-acl"
+    sampled_requests_enabled   = true
+  }
+}
+
+# Attach to CloudFront
+web_acl_id = aws_wafv2_web_acl.main.arn
+```
+
+6. **Attach HTTPS Certificate to CloudFront**
 ```hcl
 viewer_certificate {
   acm_certificate_arn = aws_acm_certificate.cert.arn
@@ -88,7 +125,7 @@ viewer_certificate {
 }
 ```
 
-6. **Point Domain to CloudFront**
+7. **Point Domain to CloudFront**
 ```hcl
 resource "aws_route53_record" "alias" {
   name    = "fkvventures.com"
@@ -117,12 +154,13 @@ All screenshots are stored in `/screenshots`:
 
 ## 💡 What I Learned
 
-This project connected every piece of cloud infrastructure I’ve studied — and forced me to think like an engineer, not just a builder. I went from hosting a static site to securing it behind CloudFront with a locked-down S3 bucket, then layering on a custom domain and fully automated DNS-validated HTTPS using Terraform.
+This project connected every piece of cloud infrastructure I’ve studied — and forced me to think like an engineer, not just a builder. I went from hosting a static site to securing it behind CloudFront with a locked-down S3 bucket, then layering on a custom domain, HTTPS, and WAF — all using Terraform.
 
 Along the way, I learned:
 - How Origin Access Identity (OAI) works behind the scenes
 - Why file permissions, object ownership, and bucket policies matter more than they seem
-- How to debug slow DNS propagation and ACM delays — without panicking
+- ACM delays are normal
+- How to integrate WAF using managed AWS rule groups for added protection
 
 Most of all, I learned to trust Terraform to build not just infrastructure, but **trust** and **security** into my deployments — and how to stay calm when something breaks.
 

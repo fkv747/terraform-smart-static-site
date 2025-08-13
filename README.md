@@ -3,6 +3,8 @@
 
 ![Terraform](https://img.shields.io/badge/Terraform-1.3%2B-blue)
 ![AWS](https://img.shields.io/badge/AWS-CloudFront%20%7C%20S3%20%7C%20ACM%20%7C%20WAF-orange)
+![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-red?logo=jenkins&logoColor=white)
+
 
 A secure, scalable, and global static site hosted on AWS — powered entirely by Terraform.
 
